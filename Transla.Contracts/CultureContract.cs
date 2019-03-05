@@ -1,4 +1,4 @@
-﻿namespace Transla.Api.Contracts
+﻿namespace Transla.Contracts
 {
     public class CultureContract
     {

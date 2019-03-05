@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Transla.Api.Contracts;
+using Transla.Contracts;
 
-namespace Transla.Api.Services
+namespace Transla.Core.Interfaces.Services
 {
     public interface ICultureService
     {

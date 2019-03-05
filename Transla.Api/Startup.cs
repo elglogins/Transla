@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
-using Transla.Api.Interfaces.Services;
-using Transla.Api.Services;
+using Transla.Storage.Redis.Extensions;
 
 namespace Transla.Api
 {
@@ -27,12 +20,14 @@ namespace Transla.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services
-            services.AddTransient<ICultureService, RedisCultureService>();
-            services.AddTransient<IDictionaryService, RedisDictionaryService>();
-            services.AddSingleton<IRedisConnectionProvider>(new RedisConnectionProvider(Configuration.GetConnectionString("RedisConnection")));
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader()));
+
+            services.AddRedisStorage(Configuration.GetConnectionString("RedisConnection"), int.Parse(Configuration["RedisStorageDatabaseId"]));
+
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
@@ -59,6 +54,7 @@ namespace Transla.Api
             });
 
             app.UseMvc();
+            app.UseCors("AllowAll");
         }
     }
 }

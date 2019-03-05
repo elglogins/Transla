@@ -1,11 +1,12 @@
 ﻿using StackExchange.Redis;
 
-namespace Transla.Api.Interfaces.Services
+namespace Transla.Storage.Redis.Interfaces.Services
 {
     public interface IRedisConnectionProvider
     {
         ConnectionMultiplexer Connection { get; }
 
-        IDatabase GetDatabase(int databaseId);
+        IDatabase GetDatabase();
+        int GetDatabaseId();
     }
 }

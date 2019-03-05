@@ -13,7 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\" />
+    <ProjectReference Include="..\Transla.Contracts\Transla.Contracts.csproj" />
+    <ProjectReference Include="..\Transla.Core\Transla.Core.csproj" />
+    <ProjectReference Include="..\Transla.Storage.Redis\Transla.Storage.Redis.csproj" />
   </ItemGroup>
 
 </Project>

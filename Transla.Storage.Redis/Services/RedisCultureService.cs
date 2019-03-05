@@ -1,30 +1,28 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Transla.Api.Contracts;
-using Transla.Api.Interfaces.Services;
+using Newtonsoft.Json;
+using Transla.Contracts;
+using Transla.Core.Interfaces.Services;
+using Transla.Storage.Redis.Interfaces.Services;
 
-namespace Transla.Api.Services
+namespace Transla.Storage.Redis.Services
 {
-    public class RedisCultureService : ICultureService
+    internal class RedisCultureService : ICultureService
     {
         private const string CulturesContainerKey = "Transla.AllowedCultures";
 
         private readonly IRedisConnectionProvider _redisConnectionProvider;
-        protected readonly int DatabaseId;
-        
 
         public RedisCultureService(IRedisConnectionProvider redisConnectionProvider)
         {
             _redisConnectionProvider = redisConnectionProvider;
-            DatabaseId = 5;
         }
 
         public async Task<IEnumerable<CultureContract>> GetAll()
         {
-            var cultures = await _redisConnectionProvider.GetDatabase(DatabaseId).HashGetAllAsync(CulturesContainerKey);
+            var cultures = await _redisConnectionProvider.GetDatabase().HashGetAllAsync(CulturesContainerKey);
             return cultures.Select(s => new CultureContract()
             {
                 CultureName = s.Name
@@ -38,7 +36,7 @@ namespace Transla.Api.Services
                 throw new ArgumentNullException(nameof(cultureName));
             }
 
-            var data = await _redisConnectionProvider.GetDatabase(DatabaseId).HashGetAsync(CulturesContainerKey, cultureName);
+            var data = await _redisConnectionProvider.GetDatabase().HashGetAsync(CulturesContainerKey, cultureName);
             if (String.IsNullOrWhiteSpace(data))
                 return null;
 
@@ -56,7 +54,7 @@ namespace Transla.Api.Services
             {
                 CultureName = cultureName
             };
-            await _redisConnectionProvider.GetDatabase(DatabaseId)
+            await _redisConnectionProvider.GetDatabase()
                .HashSetAsync(CulturesContainerKey, cultureName, JsonConvert.SerializeObject(model));
         }
 
@@ -71,7 +69,7 @@ namespace Transla.Api.Services
             if (existing == null)
                 throw new Exception("Not existing culture");
 
-            await _redisConnectionProvider.GetDatabase(DatabaseId)
+            await _redisConnectionProvider.GetDatabase()
                .HashDeleteAsync(CulturesContainerKey, cultureName);
         }
     }

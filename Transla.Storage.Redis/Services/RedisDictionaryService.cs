@@ -1,33 +1,32 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Transla.Api.Contracts;
-using Transla.Api.Interfaces.Services;
+using Newtonsoft.Json;
+using Transla.Contracts;
+using Transla.Core.Interfaces.Services;
+using Transla.Storage.Redis.Interfaces.Services;
 
-namespace Transla.Api.Services
+namespace Transla.Storage.Redis.Services
 {
-    public class RedisDictionaryService : IDictionaryService
+    internal class RedisDictionaryService : IDictionaryService
     {
         /// <summary>
-        /// Transla:{serviceAlias}:{cultureName}:{code}
+        /// Transla:{applicationAlias}:{cultureName}:{code}
         /// </summary>
         private const string DictionariesPrefixFormat = "Transla:{0}:{1}:{2}";
 
         private readonly IRedisConnectionProvider _redisConnectionProvider;
-        protected readonly int DatabaseId;
 
         public RedisDictionaryService(IRedisConnectionProvider redisConnectionProvider)
         {
             _redisConnectionProvider = redisConnectionProvider;
-            DatabaseId = 5;
         }
 
-        public async Task Delete(string cultureName, string service, string alias)
+        public async Task Delete(string cultureName, string application, string alias)
         {
-            if (String.IsNullOrWhiteSpace(service))
-                throw new ArgumentNullException(nameof(service));
+            if (String.IsNullOrWhiteSpace(application))
+                throw new ArgumentNullException(nameof(application));
 
             if (String.IsNullOrWhiteSpace(alias))
                 throw new ArgumentNullException(nameof(alias));
@@ -35,39 +34,39 @@ namespace Transla.Api.Services
             if (String.IsNullOrWhiteSpace(cultureName))
                 throw new ArgumentNullException(nameof(cultureName));
 
-            var existing = await Get(service, alias, cultureName);
+            var existing = await Get(application, alias, cultureName);
             if (existing == null)
                 throw new Exception("Item doesn't exist");
 
-            await _redisConnectionProvider.GetDatabase(DatabaseId)
-                .KeyDeleteAsync(String.Format(DictionariesPrefixFormat, service, cultureName, alias));
+            await _redisConnectionProvider.GetDatabase()
+                .KeyDeleteAsync(String.Format(DictionariesPrefixFormat, application, cultureName, alias));
         }
 
-        public async Task<IEnumerable<DictionaryContract>> Get(string service, string alias)
+        public async Task<IEnumerable<DictionaryContract>> Get(string application, string alias)
         {
-            if (String.IsNullOrWhiteSpace(service))
-                throw new ArgumentNullException(nameof(service));
+            if (String.IsNullOrWhiteSpace(application))
+                throw new ArgumentNullException(nameof(application));
 
             if (String.IsNullOrWhiteSpace(alias))
                 throw new ArgumentNullException(nameof(alias));
 
             // get the target server
             var server = _redisConnectionProvider.Connection.GetServer(_redisConnectionProvider.Connection.GetEndPoints().First());
-            var keys = server.Keys(pattern: $"Transla:{service}:*:{alias}");
+            var keys = server.Keys(pattern: $"Transla:{application}:*:{alias}", database: _redisConnectionProvider.GetDatabaseId());
             var results = new List<DictionaryContract>(keys.Count());
             foreach (var key in keys)
             {
-                var data = await _redisConnectionProvider.GetDatabase(DatabaseId).StringGetAsync(key);
+                var data = await _redisConnectionProvider.GetDatabase().StringGetAsync(key);
                 results.Add(JsonConvert.DeserializeObject<DictionaryContract>(data));
             }
 
             return results;
         }
 
-        public async Task<DictionaryContract> Get(string service, string alias, string cultureName)
+        public async Task<DictionaryContract> Get(string application, string alias, string cultureName)
         {
-            if (String.IsNullOrWhiteSpace(service))
-                throw new ArgumentNullException(nameof(service));
+            if (String.IsNullOrWhiteSpace(application))
+                throw new ArgumentNullException(nameof(application));
 
             if (String.IsNullOrWhiteSpace(alias))
                 throw new ArgumentNullException(nameof(alias));
@@ -75,8 +74,8 @@ namespace Transla.Api.Services
             if (String.IsNullOrWhiteSpace(cultureName))
                 throw new ArgumentNullException(nameof(cultureName));
 
-            var data = await _redisConnectionProvider.GetDatabase(DatabaseId)
-                .StringGetAsync(String.Format(DictionariesPrefixFormat, service, cultureName, alias));
+            var data = await _redisConnectionProvider.GetDatabase()
+                .StringGetAsync(String.Format(DictionariesPrefixFormat, application, cultureName, alias));
 
             if (String.IsNullOrWhiteSpace(data))
                 return null;
@@ -88,50 +87,50 @@ namespace Transla.Api.Services
         {
             // get the target server
             var server = _redisConnectionProvider.Connection.GetServer(_redisConnectionProvider.Connection.GetEndPoints().First());
-            var keys = server.Keys(pattern: "Transla:*");
+            var keys = server.Keys(pattern: "Transla:*", database: _redisConnectionProvider.GetDatabaseId()).ToList();
             var results = new List<DictionaryContract>(keys.Count());
             foreach(var key in keys)
             {
-                var data = await _redisConnectionProvider.GetDatabase(DatabaseId).StringGetAsync(key);
+                var data = await _redisConnectionProvider.GetDatabase().StringGetAsync(key);
                 results.Add(JsonConvert.DeserializeObject<DictionaryContract>(data));
             }
 
             return results;
         }
 
-        public async Task<IEnumerable<DictionaryContract>> GetAll(string service)
+        public async Task<IEnumerable<DictionaryContract>> GetAll(string application)
         {
-            if (String.IsNullOrWhiteSpace(service))
-                throw new ArgumentNullException(nameof(service));
+            if (String.IsNullOrWhiteSpace(application))
+                throw new ArgumentNullException(nameof(application));
 
             // get the target server
             var server = _redisConnectionProvider.Connection.GetServer(_redisConnectionProvider.Connection.GetEndPoints().First());
-            var keys = server.Keys(pattern: $"Transla:{service}:*");
+            var keys = server.Keys(pattern: $"Transla:{application}:*", database: _redisConnectionProvider.GetDatabaseId());
             var results = new List<DictionaryContract>(keys.Count());
             foreach (var key in keys)
             {
-                var data = await _redisConnectionProvider.GetDatabase(DatabaseId).StringGetAsync(key);
+                var data = await _redisConnectionProvider.GetDatabase().StringGetAsync(key);
                 results.Add(JsonConvert.DeserializeObject<DictionaryContract>(data));
             }
 
             return results;
         }
 
-        public async Task<IEnumerable<DictionaryContract>> GetAll(string service, string cultureName)
+        public async Task<IEnumerable<DictionaryContract>> GetAll(string application, string cultureName)
         {
             if (String.IsNullOrWhiteSpace(cultureName))
                 throw new ArgumentNullException(nameof(cultureName));
 
-            if (String.IsNullOrWhiteSpace(service))
-                throw new ArgumentNullException(nameof(service));
+            if (String.IsNullOrWhiteSpace(application))
+                throw new ArgumentNullException(nameof(application));
 
             // get the target server
             var server = _redisConnectionProvider.Connection.GetServer(_redisConnectionProvider.Connection.GetEndPoints().First());
-            var keys = server.Keys(pattern: $"Transla:{service}:{cultureName}:*");
+            var keys = server.Keys(pattern: $"Transla:{application}:{cultureName}:*", database: _redisConnectionProvider.GetDatabaseId());
             var results = new List<DictionaryContract>(keys.Count());
             foreach (var key in keys)
             {
-                var data = await _redisConnectionProvider.GetDatabase(DatabaseId).StringGetAsync(key);
+                var data = await _redisConnectionProvider.GetDatabase().StringGetAsync(key);
                 results.Add(JsonConvert.DeserializeObject<DictionaryContract>(data));
             }
 
@@ -149,11 +148,11 @@ namespace Transla.Api.Services
             if (String.IsNullOrWhiteSpace(contract.CultureName))
                 throw new ArgumentNullException(nameof(contract.CultureName));
 
-            if (String.IsNullOrWhiteSpace(contract.Service))
-                throw new ArgumentNullException(nameof(contract.Service));
+            if (String.IsNullOrWhiteSpace(contract.Application))
+                throw new ArgumentNullException(nameof(contract.Application));
 
-            await _redisConnectionProvider.GetDatabase(DatabaseId)
-                .StringSetAsync(String.Format(DictionariesPrefixFormat, contract.Service, contract.CultureName, contract.Alias), contract.Value);
+            await _redisConnectionProvider.GetDatabase()
+                .StringSetAsync(String.Format(DictionariesPrefixFormat, contract.Application, contract.CultureName, contract.Alias), JsonConvert.SerializeObject(contract));
         }
     }
 }

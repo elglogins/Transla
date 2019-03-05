@@ -1,24 +1,26 @@
-﻿using StackExchange.Redis;
-using System;
-using Transla.Api.Interfaces.Services;
+﻿using System;
+using StackExchange.Redis;
+using Transla.Storage.Redis.Interfaces.Services;
 
-namespace Transla.Api.Services
+namespace Transla.Storage.Redis.Services
 {
-    public class RedisConnectionProvider : IRedisConnectionProvider
+    internal class RedisConnectionProvider : IRedisConnectionProvider
     {
         protected string ConnectionString { get; set; }
+        protected int DatabaseId { get; set; }
         protected int ConnectionTimeToLive { get; set; }
         private readonly object _connectionInitLock = new object();
         private ConnectionMultiplexer _connection;
         private DateTime _connectionDate;
 
-        public RedisConnectionProvider(string connectionString)
+        public RedisConnectionProvider(string connectionString, int databaseId)
         {
             if (String.IsNullOrEmpty(connectionString))
                 throw new ArgumentNullException(nameof(connectionString));
 
             ConnectionString = connectionString;
             ConnectionTimeToLive = 3600; // 1 hour
+            DatabaseId = databaseId;
         }
 
         public ConnectionMultiplexer Connection
@@ -44,9 +46,8 @@ namespace Transla.Api.Services
             }
         }
 
-        public IDatabase GetDatabase(int databaseId)
-        {
-            return Connection.GetDatabase(databaseId);
-        }
+        public IDatabase GetDatabase() => Connection.GetDatabase(DatabaseId);
+
+        public int GetDatabaseId() => DatabaseId;
     }
 }

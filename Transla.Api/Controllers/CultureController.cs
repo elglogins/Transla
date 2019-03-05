@@ -1,25 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Transla.Api.Contracts;
-using Transla.Api.Services;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Transla.Contracts;
+using Transla.Core.Interfaces.Services;
 
 namespace Transla.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowAll")]
     public class CultureController : ControllerBase
     {
         private readonly ICultureService _cultureService;
+        private readonly IDictionaryService _dictionaryService;
+        private readonly IApplicationService _applicationService;
 
-        public CultureController(ICultureService cultureService)
+        public CultureController(ICultureService cultureService, IDictionaryService dictionaryService, IApplicationService applicationService)
         {
             _cultureService = cultureService;
+            _dictionaryService = dictionaryService;
+            _applicationService = applicationService;
         }
 
-        // GET api/values
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CultureContract>>> Get()
         {
@@ -27,13 +31,12 @@ namespace Transla.Api.Controllers
             {
                 return Ok(await _cultureService.GetAll());
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return BadRequest();
             }
         }
-
-        // GET api/values/5
+        
         [HttpGet("{cultureName}")]
         public async Task<ActionResult<CultureContract>> Get(string cultureName)
         {
@@ -50,8 +53,7 @@ namespace Transla.Api.Controllers
                 return BadRequest();
             }
         }
-
-        // POST api/values
+        
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] CultureContract contract)
         {
@@ -65,14 +67,25 @@ namespace Transla.Api.Controllers
                 return BadRequest();
             }
         }
-
-        // DELETE api/values/5
+        
         [HttpDelete("{cultureName}")]
         public async Task<ActionResult> Delete(string cultureName)
         {
             try
             {
                 await _cultureService.Delete(cultureName);
+                // get all applications
+                var applications = await _applicationService.GetAll();
+                // foreach application delete all dictionaries in this culture
+                foreach(var application in applications)
+                {
+                    var cultureDictionaries = await _dictionaryService.GetAll(application.Alias, cultureName);
+                    foreach(var dictionary in cultureDictionaries)
+                    {
+                        await _dictionaryService.Delete(dictionary.CultureName, dictionary.Application, dictionary.Alias);
+                    }
+                }
+                
                 return Ok();
             }
             catch (Exception)

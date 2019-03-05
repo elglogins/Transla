@@ -1,23 +1,68 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Transla.Api.Contracts;
-using Transla.Api.Services;
+using Transla.Contracts;
+using Transla.Core.Interfaces.Services;
 
 namespace Transla.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowAll")]
     public class DictionaryController : ControllerBase
     {
         private readonly IDictionaryService _dictionaryService;
         private readonly ICultureService _cultureService;
+        private readonly IApplicationService _applicationService;
 
-        public DictionaryController(IDictionaryService dictionaryService, ICultureService cultureService)
+        public DictionaryController(IDictionaryService dictionaryService, ICultureService cultureService, IApplicationService applicationService)
         {
             _dictionaryService = dictionaryService;
             _cultureService = cultureService;
+            _applicationService = applicationService;
+        }
+
+        [HttpGet("/application-grouped")]
+        public async Task<ActionResult<IEnumerable<DictionaryContract>>> GetApplicationGrouped()
+        {
+            try
+            {
+                var results = new List<ApplicationGroupedDictionariesContract>(); 
+                var allDictionaries = await _dictionaryService.GetAll();
+                var applicationGrouped = allDictionaries.GroupBy(g => g.Application);
+                foreach (var applicationGroup in applicationGrouped)
+                {
+                    var dictionaries = new List<ApplicationGroupedDictionariesContract.GroupedCultureDictionariesContract>();
+                    var result = new ApplicationGroupedDictionariesContract()
+                    {
+                        Alias = applicationGroup.Key
+                    };
+
+                    // process dictionaries and group by culture
+                    var applicationDictionariesGroupedByAlias = applicationGroup.GroupBy(g => g.Alias);
+                    foreach (var serviceDictionaryGroup in applicationDictionariesGroupedByAlias)
+                    {
+                        dictionaries.Add(new ApplicationGroupedDictionariesContract.GroupedCultureDictionariesContract()
+                        {
+                            Alias = serviceDictionaryGroup.Key,
+                            Dictionaries = serviceDictionaryGroup
+                        });
+                    }
+
+                    result.Dictionaries = dictionaries.OrderBy(o => o.Alias);
+                    results.Add(result);
+                }
+
+                return Ok(results);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(JsonConvert.SerializeObject(e));
+            }
         }
 
         [HttpGet]
@@ -33,12 +78,12 @@ namespace Transla.Api.Controllers
             }
         }
 
-        [HttpGet("{service}")]
-        public async Task<ActionResult<IEnumerable<DictionaryContract>>> Get(string service)
+        [HttpGet("{applicationAlias}")]
+        public async Task<ActionResult<IEnumerable<DictionaryContract>>> Get(string applicationAlias)
         {
             try
             {
-                return Ok(await _dictionaryService.GetAll(service));
+                return Ok(await _dictionaryService.GetAll(applicationAlias));
             }
             catch (Exception)
             {
@@ -46,13 +91,12 @@ namespace Transla.Api.Controllers
             }
         }
 
-        [HttpGet("{service}/{code}/{cultureName}")]
-        public async Task<ActionResult<DictionaryContract>> Get(string service, string cultureName, string code)
+        [HttpGet("{applicationAlias}/{code}/{cultureName}")]
+        public async Task<ActionResult<DictionaryContract>> Get(string applicationAlias, string cultureName, string code)
         {
             try
             {
-                // TODO: check if culture exist
-                return Ok(await _dictionaryService.Get(service, code, cultureName));
+                return Ok(await _dictionaryService.Get(applicationAlias, code, cultureName));
             }
             catch (Exception)
             {
@@ -60,13 +104,12 @@ namespace Transla.Api.Controllers
             }
         }
 
-        [HttpGet("{service}/{code}")]
-        public async Task<ActionResult<IEnumerable<DictionaryContract>>> Get(string service, string code)
+        [HttpGet("{applicationAlias}/{code}")]
+        public async Task<ActionResult<IEnumerable<DictionaryContract>>> Get(string applicationAlias, string code)
         {
             try
             {
-                // TODO: check if culture exist
-                return Ok(await _dictionaryService.Get(service, code));
+                return Ok(await _dictionaryService.Get(applicationAlias, code));
             }
             catch (Exception)
             {
@@ -74,14 +117,15 @@ namespace Transla.Api.Controllers
             }
         }
 
-        [HttpDelete("{service}/{code}")]
-        public async Task<ActionResult> Delete(string service, string code)
+        [HttpDelete("{applicationAlias}/{code}")]
+        public async Task<ActionResult> Delete(string applicationAlias, string code)
         {
             try
             {
-                // TODO: check culture
-                foreach(var culture in (await _cultureService.GetAll()))
-                    await _dictionaryService.Delete(culture.CultureName, service, code);
+                await ValidateApplications(new string[] { applicationAlias });
+
+                foreach (var culture in (await _cultureService.GetAll()))
+                    await _dictionaryService.Delete(culture.CultureName, applicationAlias, code);
 
                 return Ok();
             }
@@ -94,10 +138,15 @@ namespace Transla.Api.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] List<DictionaryContract> contracts)
         {
+            if (contracts == null || !contracts.Any())
+                return BadRequest("Invalid data");
+
             try
             {
-                // TODO: check culture
-                foreach(var contract in contracts)
+                await ValidateCultures(contracts.Select(s => s.CultureName).ToArray());
+                await ValidateApplications(contracts.Select(s => s.Application).ToArray());
+
+                foreach (var contract in contracts)
                     await _dictionaryService.Save(contract);
 
                 return Ok();
@@ -107,5 +156,29 @@ namespace Transla.Api.Controllers
                 return BadRequest();
             }
         }
+
+        #region Privates
+
+        private async Task ValidateApplications(string[] aliases)
+        {
+            var availableApplications = await _applicationService.GetAll();
+            foreach (var application in aliases)
+            {
+                if (!availableApplications.Any(a => a.Alias == application))
+                    new Exception($"Invalid application used '{application}'");
+            }
+        }
+
+        private async Task ValidateCultures(string[] cultures)
+        {
+            var availableCultures = await _cultureService.GetAll();
+            foreach (var culture in cultures)
+            {
+                if (!availableCultures.Any(a => a.CultureName == culture))
+                    new Exception($"Invalid culture used '{culture}'");
+            }
+        }
+
+        #endregion
     }
 }
