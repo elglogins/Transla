@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!loading" v-cloak>
+  <div v-cloak>
     <ApplicationDictionariesList
       v-for="application in applications"
       v-bind:application="application"

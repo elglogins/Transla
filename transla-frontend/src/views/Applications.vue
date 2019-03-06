@@ -31,6 +31,13 @@
       </md-table-row>
     </md-table>
 
+    <md-empty-state
+      v-show="applications.length < 1"
+      md-label="Nothing to show here :( "
+      :md-description="`No applications are added yet. Go ahead and add one!`"
+    >
+    </md-empty-state>
+
     <md-dialog-confirm
       :md-active.sync="deletion.dialogIsActive"
       :md-title="deletionPromptTitle"

@@ -15,7 +15,9 @@
         </md-field>
       </form>
     </md-dialog-content>
-    <md-dialog-actions>
+    <md-dialog-actions align="end">
+      <md-button class="md-accent" v-on:click="cancel()">Delete</md-button>
+      <span class="spacer"></span>
       <md-button class="md-primary" v-on:click="cancel()">Close</md-button>
       <md-button class="md-primary" v-on:click="save()">Save</md-button>
     </md-dialog-actions>
@@ -88,4 +90,8 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.spacer {
+  flex: 1 1 auto;
+}
+</style>

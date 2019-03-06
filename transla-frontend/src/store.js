@@ -33,9 +33,35 @@ export default new Vuex.Store({
       var application = state.applicationsGroupedDictionaries.find(
         f => f.alias == aliasGroupedDictionaries[0].application
       );
+
+      if (!application) {
+        // if application not in the list, add it
+        state.applicationsGroupedDictionaries.push({
+          alias: aliasGroupedDictionaries[0].application,
+          dictionaries: []
+        });
+
+        application = state.applicationsGroupedDictionaries.find(
+          f => f.alias == aliasGroupedDictionaries[0].application
+        );
+      }
+
       var dictionaryGroup = application.dictionaries.find(
         f => f.alias == aliasGroupedDictionaries[0].alias
       );
+
+      if (!dictionaryGroup) {
+        // if dictionary group not in the list, add it
+        application.dictionaries.push({
+          alias: aliasGroupedDictionaries[0].alias,
+          dictionaries: []
+        });
+
+        dictionaryGroup = application.dictionaries.find(
+          f => f.alias == aliasGroupedDictionaries[0].alias
+        );
+      }
+
       aliasGroupedDictionaries.forEach(function(element) {
         var existing = dictionaryGroup.dictionaries.find(
           f => f.cultureName == element.cultureName

@@ -13,7 +13,9 @@
             <md-button class="md-primary" v-on:click="showApplicationCreation"
               >Add application</md-button
             >
-            <md-button class="md-primary">Add dictionary</md-button>
+            <md-button class="md-primary" v-on:click="showDictionaryCreation"
+              >Add dictionary</md-button
+            >
           </div>
         </div>
 
@@ -54,11 +56,22 @@
       @md-cancel="application_creation.dialogIsActive = false"
       @md-confirm="onApplicationCreationConfirm"
     />
+
+    <!-- creation of dictionary item -->
+    <CreateDictionary
+      v-bind:is-active="dictionary_creation.dialogIsActive"
+      v-on:closed="dictionary_creation.dialogIsActive = false"
+      v-on:saved="dictionary_creation.dialogIsActive = false"
+    />
   </div>
 </template>
 
 <script>
+import CreateDictionary from "@/components/CreateDictionary.vue";
 export default {
+  components: {
+    CreateDictionary
+  },
   data: () => ({
     menuVisible: false,
     culture_creation: {
@@ -68,6 +81,9 @@ export default {
     application_creation: {
       dialogIsActive: false,
       alias: null
+    },
+    dictionary_creation: {
+      dialogIsActive: false
     }
   }),
   methods: {
@@ -84,6 +100,7 @@ export default {
         })
         .then(function() {
           // emit event
+          self.$store.dispatch("loadDictionaries");
           self.culture_creation.dialogIsActive = false;
         });
     },
@@ -100,8 +117,13 @@ export default {
         })
         .then(function() {
           // emit event
+          self.$store.dispatch("loadDictionaries");
           self.application_creation.dialogIsActive = false;
         });
+    },
+    // dictionary item
+    showDictionaryCreation() {
+      this.dictionary_creation.dialogIsActive = true;
     }
   },
   created() {

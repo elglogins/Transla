@@ -2,7 +2,7 @@
   <div>
     <md-card>
       <md-card-content>
-        <md-table @md-selected="onSelect">
+        <md-table>
           <md-table-toolbar>
             <div class="md-toolbar-section-start">
               <h1 class="md-title">{{ application.alias }}</h1>
@@ -54,34 +54,29 @@
             `No dictionaries found for this '${searchTerm}' query. Try a different search term or create a new dictionary.`
           "
         >
-          <md-button
-            class="md-primary md-raised"
-            v-on:click="showCreateNewItem = true"
-            >Create New Dictionary Item</md-button
-          >
         </md-empty-state>
       </md-card-content>
     </md-card>
     <EditDictionary v-bind:grouped-dictionary="selectedGroupedDictionary" />
-    <CreateDictionary
+    <!-- <CreateDictionary
       v-bind:application-alias="application.alias"
       v-bind:is-active="showCreateNewItem"
       v-on:closed="showCreateNewItem = false"
       v-on:saved="showCreateNewItem = false"
-    />
+    /> -->
   </div>
 </template>
 
 <script>
 import CultureFlag from "./CultureFlag.vue";
 import EditDictionary from "./EditDictionary.vue";
-import CreateDictionary from "./CreateDictionary.vue";
+// import CreateDictionary from "./CreateDictionary.vue";
 export default {
   name: "ApplicationDictionariesList",
   components: {
     CultureFlag,
-    EditDictionary,
-    CreateDictionary
+    EditDictionary
+    // CreateDictionary
   },
   props: ["application", "cultures"],
   computed: {},

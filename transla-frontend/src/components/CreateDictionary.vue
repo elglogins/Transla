@@ -2,19 +2,26 @@
   <md-dialog :md-active.sync="showDialog">
     <md-dialog-title>Create new dictionary</md-dialog-title>
     <md-dialog-content>
-      <form>
-        Current selected service alias: {{ temporaryFormData.service }}
+      <form @submit="save">
         <md-field>
-          <label for="movie">Service</label>
-          <md-select v-model="temporaryFormData.service">
-            <md-option value="fight-club">Fight Club</md-option>
-            <md-option value="godfather">Godfather</md-option>
+          <label for="movie">Application</label>
+          <md-select v-model="temporaryFormData.application">
+            <md-option
+              v-bind:value="application.alias"
+              v-for="application in applications"
+              v-bind:key="application.alias"
+              >{{ application.alias }}</md-option
+            >
           </md-select>
         </md-field>
 
         <md-field>
           <label>Alias</label>
-          <md-input v-model="temporaryFormData.alias"></md-input>
+          <md-input
+            v-model="temporaryFormData.alias"
+            placeholder="YOUR_DICTIONARY_ALIAS"
+            maxlength="30"
+          ></md-input>
         </md-field>
 
         <md-field
@@ -36,10 +43,13 @@
 <script>
 export default {
   name: "CreateDictionary",
-  props: ["serviceAlias", "isActive"],
+  props: ["applicationAlias", "isActive"],
   computed: {
     cultures() {
       return this.$store.getters.getCultures;
+    },
+    applications() {
+      return this.$store.getters.getApplications;
     }
   },
   data() {
@@ -53,7 +63,7 @@ export default {
       var self = this;
       var model = {
         alias: null,
-        service: self.serviceAlias,
+        application: self.applicationAlias,
         dictionaries: []
       };
       // ensure all cultures are present
@@ -71,16 +81,23 @@ export default {
   methods: {
     save() {
       var self = this;
-      //   this.$store
-      //     .dispatch(
-      //       "editAliasGroupedDictionary",
-      //       this.temporaryFormData.dictionaries
-      //     )
-      //     .then(function() {
-      //       // emit event
-      self.temporaryFormData = {};
-      self.$emit("saved");
-      //     });
+      self.temporaryFormData.dictionaries.forEach(function(item) {
+        item.application = self.temporaryFormData.application;
+        item.alias = self.temporaryFormData.alias;
+      });
+      /*eslint-disable */
+      // console.log(self.temporaryFormData);
+      /*eslint-enable */
+      self.$store
+        .dispatch(
+          "editAliasGroupedDictionary",
+          self.temporaryFormData.dictionaries
+        )
+        .then(function() {
+          // emit event
+          self.temporaryFormData = {};
+          self.$emit("saved");
+        });
     },
     cancel() {
       var self = this;
