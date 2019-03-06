@@ -20,7 +20,7 @@
           <md-input
             v-model="temporaryFormData.alias"
             placeholder="YOUR_DICTIONARY_ALIAS"
-            maxlength="30"
+            maxlength="50"
           ></md-input>
         </md-field>
 
