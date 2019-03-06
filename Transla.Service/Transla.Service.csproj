@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netcoreapp2.2</TargetFrameworks>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
     <RepositoryUrl>https://github.com/elglogins/Transla</RepositoryUrl>
     <PackageProjectUrl>https://github.com/elglogins/Transla</PackageProjectUrl>
     <Description>Transla service core</Description>
@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
 </Project>
