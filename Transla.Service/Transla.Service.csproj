@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netcoreapp2.2</TargetFrameworks>
-    <Version>1.0.1</Version>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
     <RepositoryUrl>https://github.com/elglogins/Transla</RepositoryUrl>
     <PackageProjectUrl>https://github.com/elglogins/Transla</PackageProjectUrl>
     <Description>Transla service core</Description>

@@ -10,7 +10,7 @@ namespace Transla.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("AllowAll")]
+    [EnableCors("TranslaAllowAll")]
     public class CultureController : ControllerBase
     {
         private readonly ICultureService _cultureService;

@@ -10,7 +10,7 @@ namespace Transla.Service.Extensions
             services.AddMvc()
                   .AddApplicationPart(typeof(ApplicationController).Assembly);
 
-            services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+            services.AddCors(options => options.AddPolicy("TranslaAllowAll", p => p.AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader()));
         }
