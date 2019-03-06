@@ -16,7 +16,7 @@
       </form>
     </md-dialog-content>
     <md-dialog-actions align="end">
-      <md-button class="md-accent" v-on:click="cancel()">Delete</md-button>
+      <md-button class="md-accent" v-on:click="remove()">Delete</md-button>
       <span class="spacer"></span>
       <md-button class="md-primary" v-on:click="cancel()">Close</md-button>
       <md-button class="md-primary" v-on:click="save()">Save</md-button>
@@ -75,6 +75,19 @@ export default {
           "editAliasGroupedDictionary",
           this.temporaryFormData.dictionaries
         )
+        .then(function() {
+          // emit event
+          self.temporaryFormData = {};
+          self.showDialog = false;
+        });
+    },
+    remove() {
+      var self = this;
+      this.$store
+        .dispatch("deleteDictionary", {
+          application: this.temporaryFormData.application,
+          alias: this.temporaryFormData.alias
+        })
         .then(function() {
           // emit event
           self.temporaryFormData = {};

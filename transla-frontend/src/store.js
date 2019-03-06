@@ -26,6 +26,21 @@ export default new Vuex.Store({
     setApplicationsGroupedDictionaries(state, dictionaries) {
       state.applicationsGroupedDictionaries = dictionaries;
     },
+    deleteDictionary(state, data) {
+      var applicationAlias = data.application;
+      var dictionaryAlias = data.alias;
+      var application = state.applicationsGroupedDictionaries.find(c => {
+        return c.alias == applicationAlias;
+      });
+      var existing = application.dictionaries.find(c => {
+        return c.alias == dictionaryAlias;
+      });
+
+      if (existing) {
+        var index = application.dictionaries.indexOf(existing);
+        application.dictionaries.splice(index, 1);
+      }
+    },
     editAliasGroupedDictionary(state, aliasGroupedDictionaries) {
       if (!aliasGroupedDictionaries && aliasGroupedDictionaries.length <= 0) {
         return false;
@@ -116,6 +131,27 @@ export default new Vuex.Store({
         .then(response => {
           context.commit("setApplicationsGroupedDictionaries", response.data);
         });
+    },
+    deleteDictionary(context, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(
+            `${process.env.VUE_APP_API_URL}/api/Dictionary/${
+              data.application
+            }/${data.alias}`
+          )
+          .then(
+            function() {
+              // http success, call the mutator and change something in state
+              context.commit("deleteDictionary", data);
+              resolve(data); // Let the calling function know that http is done. You may send some data back
+            },
+            error => {
+              // http failed, let the calling function know that action did not work out
+              reject(error);
+            }
+          );
+      });
     },
     editAliasGroupedDictionary(context, aliasGroupedDictionaries) {
       return new Promise((resolve, reject) => {
