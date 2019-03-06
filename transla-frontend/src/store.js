@@ -112,7 +112,7 @@ export default new Vuex.Store({
     // dictionaries
     loadDictionaries(context) {
       return axios
-        .get("http://localhost:5000/application-grouped")
+        .get(`${process.env.VUE_APP_API_URL}/application-grouped`)
         .then(response => {
           context.commit("setApplicationsGroupedDictionaries", response.data);
         });
@@ -121,7 +121,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios
           .post(
-            "http://localhost:5000/api/Dictionary",
+            `${process.env.VUE_APP_API_URL}/api/Dictionary`,
             aliasGroupedDictionaries
           )
           .then(
@@ -143,30 +143,36 @@ export default new Vuex.Store({
     // applications
     loadApplications(context) {
       return axios
-        .get("http://localhost:5000/api/Application")
+        .get(`${process.env.VUE_APP_API_URL}/api/Application`)
         .then(response => {
           context.commit("setApplications", response.data);
         });
     },
     createApplication(context, application) {
       return new Promise((resolve, reject) => {
-        axios.post(`http://localhost:5000/api/Application`, application).then(
-          function() {
-            // http success, call the mutator and change something in state
-            context.commit("createApplication", application);
-            resolve(application); // Let the calling function know that http is done. You may send some data back
-          },
-          error => {
-            // http failed, let the calling function know that action did not work out
-            reject(error);
-          }
-        );
+        axios
+          .post(`${process.env.VUE_APP_API_URL}/api/Application`, application)
+          .then(
+            function() {
+              // http success, call the mutator and change something in state
+              context.commit("createApplication", application);
+              resolve(application); // Let the calling function know that http is done. You may send some data back
+            },
+            error => {
+              // http failed, let the calling function know that action did not work out
+              reject(error);
+            }
+          );
       });
     },
     deleteApplication(context, application) {
       return new Promise((resolve, reject) => {
         axios
-          .delete(`http://localhost:5000/api/Application/${application.alias}`)
+          .delete(
+            `${process.env.VUE_APP_API_URL}/api/Application/${
+              application.alias
+            }`
+          )
           .then(
             function() {
               // http success, call the mutator and change something in state
@@ -182,13 +188,15 @@ export default new Vuex.Store({
     },
     // ciltures
     loadCultures(context) {
-      return axios.get("http://localhost:5000/api/Culture").then(response => {
-        context.commit("setCultures", response.data);
-      });
+      return axios
+        .get(`${process.env.VUE_APP_API_URL}/api/Culture`)
+        .then(response => {
+          context.commit("setCultures", response.data);
+        });
     },
     createCulture(context, culture) {
       return new Promise((resolve, reject) => {
-        axios.post(`http://localhost:5000/api/Culture`, culture).then(
+        axios.post(`${process.env.VUE_APP_API_URL}/api/Culture`, culture).then(
           function() {
             // http success, call the mutator and change something in state
             context.commit("createCulture", culture);
@@ -204,7 +212,9 @@ export default new Vuex.Store({
     deleteCulture(context, culture) {
       return new Promise((resolve, reject) => {
         axios
-          .delete(`http://localhost:5000/api/Culture/${culture.cultureName}`)
+          .delete(
+            `${process.env.VUE_APP_API_URL}/api/Culture/${culture.cultureName}`
+          )
           .then(
             function() {
               // http success, call the mutator and change something in state
