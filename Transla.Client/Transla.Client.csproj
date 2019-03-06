@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netcoreapp2.2</TargetFrameworks>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <RepositoryUrl>https://github.com/elglogins/Transla</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/elglogins/Transla</PackageProjectUrl>
+    <Description>Client for Transla (centralized dictionary/localization service)</Description>
+    <Authors>Elgars Logins</Authors>
+    <PackageReleaseNotes>Initial version</PackageReleaseNotes>
+    <PackageTags>transla, api, dictionary, localization, resources</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
