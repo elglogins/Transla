@@ -2,8 +2,9 @@
 
 namespace Transla.Client.Services
 {
-    interface IDictionaryService
+    public interface IDictionaryService
     {
-        Task<string> GetDictionaryValue(string alias, string cultureName);
+        string Get(string alias, string cultureName);
+        string Get(string alias);
     }
 }

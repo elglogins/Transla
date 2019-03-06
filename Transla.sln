@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{1841
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transla.Storage.Redis", "Transla.Storage.Redis\Transla.Storage.Redis.csproj", "{5472B370-DBD6-4F16-9DC8-268A777EF324}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transla.Client", "Transla.Client\Transla.Client.csproj", "{F698E58C-3FE7-482E-8660-802B24CC7F01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Transla.Client", "Transla.Client\Transla.Client.csproj", "{F698E58C-3FE7-482E-8660-802B24CC7F01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
