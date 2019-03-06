@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Transla.Contracts;
-using Transla.Core.Interfaces.Services;
+using Transla.Service.Interfaces.Services;
 
-namespace Transla.Api.Controllers
+namespace Transla.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

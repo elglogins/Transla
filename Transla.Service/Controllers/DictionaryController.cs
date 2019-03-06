@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Transla.Contracts;
-using Transla.Core.Interfaces.Services;
+using Transla.Service.Interfaces.Services;
 
-namespace Transla.Api.Controllers
+namespace Transla.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -31,7 +31,7 @@ namespace Transla.Api.Controllers
         {
             try
             {
-                var results = new List<ApplicationGroupedDictionariesContract>(); 
+                var results = new List<ApplicationGroupedDictionariesContract>();
                 var allDictionaries = await _dictionaryService.GetAll();
                 var applicationGrouped = allDictionaries.GroupBy(g => g.Application);
                 foreach (var applicationGroup in applicationGrouped)

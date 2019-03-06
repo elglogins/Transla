@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Transla.Contracts;
-using Transla.Core.Interfaces.Services;
+using Transla.Service.Interfaces.Services;
 
-namespace Transla.Api.Controllers
+namespace Transla.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -36,7 +36,7 @@ namespace Transla.Api.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpGet("{cultureName}")]
         public async Task<ActionResult<CultureContract>> Get(string cultureName)
         {
@@ -53,7 +53,7 @@ namespace Transla.Api.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] CultureContract contract)
         {
@@ -67,7 +67,7 @@ namespace Transla.Api.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpDelete("{cultureName}")]
         public async Task<ActionResult> Delete(string cultureName)
         {
@@ -77,15 +77,15 @@ namespace Transla.Api.Controllers
                 // get all applications
                 var applications = await _applicationService.GetAll();
                 // foreach application delete all dictionaries in this culture
-                foreach(var application in applications)
+                foreach (var application in applications)
                 {
                     var cultureDictionaries = await _dictionaryService.GetAll(application.Alias, cultureName);
-                    foreach(var dictionary in cultureDictionaries)
+                    foreach (var dictionary in cultureDictionaries)
                     {
                         await _dictionaryService.Delete(dictionary.CultureName, dictionary.Application, dictionary.Alias);
                     }
                 }
-                
+
                 return Ok();
             }
             catch (Exception)

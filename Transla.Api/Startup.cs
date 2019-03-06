@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Reflection;
+using Transla.Service.Controllers;
+using Transla.Service.Extensions;
 using Transla.Storage.Redis.Extensions;
 
 namespace Transla.Api
@@ -20,13 +23,15 @@ namespace Transla.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            
             services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader()));
 
-            services.AddRedisStorage(Configuration.GetConnectionString("RedisConnection"), int.Parse(Configuration["RedisStorageDatabaseId"]));
+            services.AddTransla();
+            services.AddTranslaRedisStorage(Configuration.GetConnectionString("RedisConnection"), int.Parse(Configuration["RedisStorageDatabaseId"]));
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>

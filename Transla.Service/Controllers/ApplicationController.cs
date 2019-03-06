@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Transla.Contracts;
-using Transla.Core.Interfaces.Services;
+using Transla.Service.Interfaces.Services;
 
-namespace Transla.Api.Controllers
+namespace Transla.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -74,7 +74,7 @@ namespace Transla.Api.Controllers
                 await _applicationService.Delete(alias);
                 // delete all dictionaries for particular application
                 var applicationDictionaries = await _dictionaryService.GetAll(alias);
-                foreach(var dictionary in applicationDictionaries)
+                foreach (var dictionary in applicationDictionaries)
                 {
                     await _dictionaryService.Delete(dictionary.CultureName, dictionary.Application, dictionary.Alias);
                 }

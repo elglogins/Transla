@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Transla.Contracts;
 
-namespace Transla.Core.Interfaces.Services
+namespace Transla.Service.Interfaces.Services
 {
     public interface IApplicationService
     {

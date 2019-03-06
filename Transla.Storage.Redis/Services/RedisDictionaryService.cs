@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Transla.Contracts;
-using Transla.Core.Interfaces.Services;
+using Transla.Service.Interfaces.Services;
 using Transla.Storage.Redis.Interfaces.Services;
 
 namespace Transla.Storage.Redis.Services
@@ -89,7 +89,7 @@ namespace Transla.Storage.Redis.Services
             var server = _redisConnectionProvider.Connection.GetServer(_redisConnectionProvider.Connection.GetEndPoints().First());
             var keys = server.Keys(pattern: "Transla:*", database: _redisConnectionProvider.GetDatabaseId()).ToList();
             var results = new List<DictionaryContract>(keys.Count());
-            foreach(var key in keys)
+            foreach (var key in keys)
             {
                 var data = await _redisConnectionProvider.GetDatabase().StringGetAsync(key);
                 results.Add(JsonConvert.DeserializeObject<DictionaryContract>(data));
