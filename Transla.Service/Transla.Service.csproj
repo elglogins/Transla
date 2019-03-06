@@ -2,8 +2,17 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netcoreapp2.2</TargetFrameworks>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <RepositoryUrl>https://github.com/elglogins/Transla</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/elglogins/Transla</PackageProjectUrl>
+    <Description>Transla service core</Description>
+    <Authors>Elgars Logins</Authors>
+    <PackageReleaseNotes>Base implementation</PackageReleaseNotes>
+    <PackageTags>transla, service, api, dictionary, localization, resources</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Transla.Contracts\Transla.Contracts.csproj" />
   </ItemGroup>
