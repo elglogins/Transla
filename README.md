@@ -66,8 +66,7 @@ During startup of your application it is only a matter of adding Transla client 
 A little extra configuration is needed, Transla client has to know about current http context, to get culture information, using inbuilt .NET Core http context accessor:
 
 ```csharp
-services.AddMemoryCache();
-            services.AddHttpContextAccessor();
+services.AddHttpContextAccessor();
 ```
 
 Also, as you noticed during configuration of Transla it expects value for cache expiration in minutes, it is based on default abstractions of Net Core to inject caching service, for this example we use Memory Cache:
