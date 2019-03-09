@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ namespace Transla.Service.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("TranslaAllowAll")]
+    [Authorize(AuthenticationSchemes = AuthenticationSchemas.ManagementAccess)]
     public class DictionaryController : ControllerBase
     {
         private readonly IDictionaryService _dictionaryService;
@@ -27,6 +29,7 @@ namespace Transla.Service.Controllers
         }
 
         [HttpGet("/application-grouped")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DictionaryContract>>> GetApplicationGrouped()
         {
             try
@@ -66,6 +69,7 @@ namespace Transla.Service.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DictionaryContract>>> Get()
         {
             try
@@ -79,6 +83,7 @@ namespace Transla.Service.Controllers
         }
 
         [HttpGet("{applicationAlias}")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DictionaryContract>>> Get(string applicationAlias)
         {
             try
@@ -92,6 +97,7 @@ namespace Transla.Service.Controllers
         }
 
         [HttpGet("{applicationAlias}/{code}/{cultureName}")]
+        [AllowAnonymous]
         public async Task<ActionResult<DictionaryContract>> Get(string applicationAlias, string cultureName, string code)
         {
             try
@@ -105,6 +111,7 @@ namespace Transla.Service.Controllers
         }
 
         [HttpGet("{applicationAlias}/{code}")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DictionaryContract>>> Get(string applicationAlias, string code)
         {
             try

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,6 +12,7 @@ namespace Transla.Service.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("TranslaAllowAll")]
+    [Authorize(AuthenticationSchemes = AuthenticationSchemas.ManagementAccess)]
     public class CultureController : ControllerBase
     {
         private readonly ICultureService _cultureService;

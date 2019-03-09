@@ -7,6 +7,7 @@ namespace Transla.Service.Extensions
         public static void UseTransla(this IApplicationBuilder app)
         {
             app.UseCors("TranslaAllowAll");
+            app.UseAuthentication();
         }
     }
 }
