@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
+import { userService } from "./services/UserService";
 
 Vue.use(Vuex);
 
@@ -127,7 +128,9 @@ export default new Vuex.Store({
     // dictionaries
     loadDictionaries(context) {
       return axios
-        .get(`${process.env.VUE_APP_API_URL}/application-grouped`)
+        .get(`${process.env.VUE_APP_API_URL}/application-grouped`, {
+          headers: { apiKey: userService.getApiKey() }
+        })
         .then(response => {
           context.commit("setApplicationsGroupedDictionaries", response.data);
         });
@@ -138,7 +141,10 @@ export default new Vuex.Store({
           .delete(
             `${process.env.VUE_APP_API_URL}/api/Dictionary/${
               data.application
-            }/${data.alias}`
+            }/${data.alias}`,
+            {
+              headers: { apiKey: userService.getApiKey() }
+            }
           )
           .then(
             function() {
@@ -158,7 +164,10 @@ export default new Vuex.Store({
         axios
           .post(
             `${process.env.VUE_APP_API_URL}/api/Dictionary`,
-            aliasGroupedDictionaries
+            aliasGroupedDictionaries,
+            {
+              headers: { apiKey: userService.getApiKey() }
+            }
           )
           .then(
             function() {
@@ -179,7 +188,9 @@ export default new Vuex.Store({
     // applications
     loadApplications(context) {
       return axios
-        .get(`${process.env.VUE_APP_API_URL}/api/Application`)
+        .get(`${process.env.VUE_APP_API_URL}/api/Application`, {
+          headers: { apiKey: userService.getApiKey() }
+        })
         .then(response => {
           context.commit("setApplications", response.data);
         });
@@ -187,7 +198,9 @@ export default new Vuex.Store({
     createApplication(context, application) {
       return new Promise((resolve, reject) => {
         axios
-          .post(`${process.env.VUE_APP_API_URL}/api/Application`, application)
+          .post(`${process.env.VUE_APP_API_URL}/api/Application`, application, {
+            headers: { apiKey: userService.getApiKey() }
+          })
           .then(
             function() {
               // http success, call the mutator and change something in state
@@ -207,7 +220,10 @@ export default new Vuex.Store({
           .delete(
             `${process.env.VUE_APP_API_URL}/api/Application/${
               application.alias
-            }`
+            }`,
+            {
+              headers: { apiKey: userService.getApiKey() }
+            }
           )
           .then(
             function() {
@@ -225,31 +241,40 @@ export default new Vuex.Store({
     // ciltures
     loadCultures(context) {
       return axios
-        .get(`${process.env.VUE_APP_API_URL}/api/Culture`)
+        .get(`${process.env.VUE_APP_API_URL}/api/Culture`, {
+          headers: { apiKey: userService.getApiKey() }
+        })
         .then(response => {
           context.commit("setCultures", response.data);
         });
     },
     createCulture(context, culture) {
       return new Promise((resolve, reject) => {
-        axios.post(`${process.env.VUE_APP_API_URL}/api/Culture`, culture).then(
-          function() {
-            // http success, call the mutator and change something in state
-            context.commit("createCulture", culture);
-            resolve(culture); // Let the calling function know that http is done. You may send some data back
-          },
-          error => {
-            // http failed, let the calling function know that action did not work out
-            reject(error);
-          }
-        );
+        axios
+          .post(`${process.env.VUE_APP_API_URL}/api/Culture`, culture, {
+            headers: { apiKey: userService.getApiKey() }
+          })
+          .then(
+            function() {
+              // http success, call the mutator and change something in state
+              context.commit("createCulture", culture);
+              resolve(culture); // Let the calling function know that http is done. You may send some data back
+            },
+            error => {
+              // http failed, let the calling function know that action did not work out
+              reject(error);
+            }
+          );
       });
     },
     deleteCulture(context, culture) {
       return new Promise((resolve, reject) => {
         axios
           .delete(
-            `${process.env.VUE_APP_API_URL}/api/Culture/${culture.cultureName}`
+            `${process.env.VUE_APP_API_URL}/api/Culture/${culture.cultureName}`,
+            {
+              headers: { apiKey: userService.getApiKey() }
+            }
           )
           .then(
             function() {

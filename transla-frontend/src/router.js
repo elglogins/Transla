@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Home from "./views/Home.vue";
+import { userService } from "./services/UserService";
 
 Vue.use(Router);
 
@@ -8,12 +9,12 @@ Vue.use(Router);
 Vue.component("router-link", Vue.options.components.RouterLink);
 Vue.component("router-view", Vue.options.components.RouterView);
 
-export default new Router({
+const router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
   routes: [
     {
-      path: "/",
+      path: "/home",
       name: "home",
       component: Home
     },
@@ -34,6 +35,30 @@ export default new Router({
       // which is lazy-loaded when the route is visited.
       component: () =>
         import(/* webpackChunkName: "cultures" */ "./views/Applications.vue")
+    },
+    {
+      path: "/",
+      name: "login",
+      component: () =>
+        import(/* webpackChunkName: "cultures" */ "./views/Login.vue"),
+      meta: {
+        guest: true
+      }
     }
   ]
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.guest)) {
+    next();
+  } else {
+    // must be logged in to access page
+    if (userService.isLoggedIn()) {
+      next();
+    } else {
+      next({ name: "login" });
+    }
+  }
+});
+
+export default router;
