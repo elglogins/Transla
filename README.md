@@ -85,12 +85,6 @@ In your constructor you can inject `IDictionaryService`, that provides your with
 
 It looks at query string parameter named `culture` as a priority, if not present then it looks at header named `Culture` if not present either then falls back to default culture defined during startup of project.
 
-### Todos
-
-- [ ] Authentication on command endpoints
-- [ ] Ability to specify base url and access token during startup of Vue frontend app
-- [ ] Ability to provide custom CORS policy on service
-
 ### API endpoints
 
 ![alt endpoints](https://i.ibb.co/BqdPxvg/screencapture-dictionary-goshop-staging-novicell-dk-swagger-index-html-2019-03-07-10-39-17.png)
