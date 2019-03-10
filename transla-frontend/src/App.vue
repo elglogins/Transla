@@ -6,7 +6,7 @@
           <div class="md-toolbar-section-start">
             <span class="md-title">Transla</span>
           </div>
-          <div class="md-toolbar-section-end">
+          <div class="md-toolbar-section-end" v-show="isLoggedIn()">
             <md-button class="md-primary" v-on:click="showCultureCreation"
               >Add culture</md-button
             >
@@ -16,14 +16,15 @@
             <md-button class="md-primary" v-on:click="showDictionaryCreation"
               >Add dictionary</md-button
             >
+            <md-button class="md-primary" v-on:click="logout">Logout</md-button>
           </div>
         </div>
 
         <div class="md-toolbar-row">
-          <md-tabs class="md-primary" md-sync-route>
+          <md-tabs class="md-primary" v-show="isLoggedIn()" md-sync-route>
+            <md-tab md-label="Dictionaries" to="/home"></md-tab>
             <md-tab md-label="Cultures" to="/cultures"></md-tab>
             <md-tab md-label="Applications" to="/applications"></md-tab>
-            <md-tab md-label="Dictionaries" to="/"></md-tab>
           </md-tabs>
         </div>
       </md-app-toolbar>
@@ -35,6 +36,7 @@
 
     <!-- creation of culture -->
     <md-dialog-prompt
+      v-show="isLoggedIn()"
       :md-active.sync="culture_creation.dialogIsActive"
       v-model="culture_creation.cultureName"
       md-title="Create new culture"
@@ -47,6 +49,7 @@
 
     <!-- creation of application -->
     <md-dialog-prompt
+      v-show="isLoggedIn()"
       :md-active.sync="application_creation.dialogIsActive"
       v-model="application_creation.alias"
       md-title="Create new application"
@@ -59,6 +62,7 @@
 
     <!-- creation of dictionary item -->
     <CreateDictionary
+      v-show="isLoggedIn()"
       v-bind:is-active="dictionary_creation.dialogIsActive"
       v-on:closed="dictionary_creation.dialogIsActive = false"
       v-on:saved="dictionary_creation.dialogIsActive = false"
@@ -68,6 +72,7 @@
 
 <script>
 import CreateDictionary from "@/components/CreateDictionary.vue";
+import { userService } from "./services/UserService";
 export default {
   components: {
     CreateDictionary
@@ -86,6 +91,11 @@ export default {
       dialogIsActive: false
     }
   }),
+  computed: {
+    isLoggedIn() {
+      return userService.isLoggedIn;
+    }
+  },
   methods: {
     // culture
     showCultureCreation() {
@@ -124,16 +134,23 @@ export default {
     // dictionary item
     showDictionaryCreation() {
       this.dictionary_creation.dialogIsActive = true;
+    },
+    // user
+    logout() {
+      userService.logout();
+      this.$router.push("login");
     }
   },
   created() {
     var self = this;
-    this.$store.dispatch("loadApplications");
-    this.$store.dispatch("loadCultures").then(function() {
-      self.$store.dispatch("loadDictionaries").then(function() {
-        self.loading = false;
+    if (userService.isLoggedIn()) {
+      self.$store.dispatch("loadApplications");
+      self.$store.dispatch("loadCultures").then(function() {
+        self.$store.dispatch("loadDictionaries").then(function() {
+          self.loading = false;
+        });
       });
-    });
+    }
   }
 };
 </script>
