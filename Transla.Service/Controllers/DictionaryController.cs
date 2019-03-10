@@ -29,7 +29,6 @@ namespace Transla.Service.Controllers
         }
 
         [HttpGet("/application-grouped")]
-        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DictionaryContract>>> GetApplicationGrouped()
         {
             try
@@ -69,7 +68,6 @@ namespace Transla.Service.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DictionaryContract>>> Get()
         {
             try
