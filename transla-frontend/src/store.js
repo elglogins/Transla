@@ -128,7 +128,7 @@ export default new Vuex.Store({
     // dictionaries
     loadDictionaries(context) {
       return axios
-        .get(`${process.env.VUE_APP_API_URL}/application-grouped`, {
+        .get(`${userService.getBaseUrl()}/application-grouped`, {
           headers: { apiKey: userService.getApiKey() }
         })
         .then(response => {
@@ -139,9 +139,9 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios
           .delete(
-            `${process.env.VUE_APP_API_URL}/api/Dictionary/${
-              data.application
-            }/${data.alias}`,
+            `${userService.getBaseUrl()}/api/Dictionary/${data.application}/${
+              data.alias
+            }`,
             {
               headers: { apiKey: userService.getApiKey() }
             }
@@ -163,7 +163,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios
           .post(
-            `${process.env.VUE_APP_API_URL}/api/Dictionary`,
+            `${userService.getBaseUrl()}/api/Dictionary`,
             aliasGroupedDictionaries,
             {
               headers: { apiKey: userService.getApiKey() }
@@ -188,7 +188,7 @@ export default new Vuex.Store({
     // applications
     loadApplications(context) {
       return axios
-        .get(`${process.env.VUE_APP_API_URL}/api/Application`, {
+        .get(`${userService.getBaseUrl()}/api/Application`, {
           headers: { apiKey: userService.getApiKey() }
         })
         .then(response => {
@@ -198,7 +198,7 @@ export default new Vuex.Store({
     createApplication(context, application) {
       return new Promise((resolve, reject) => {
         axios
-          .post(`${process.env.VUE_APP_API_URL}/api/Application`, application, {
+          .post(`${userService.getBaseUrl()}/api/Application`, application, {
             headers: { apiKey: userService.getApiKey() }
           })
           .then(
@@ -218,9 +218,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios
           .delete(
-            `${process.env.VUE_APP_API_URL}/api/Application/${
-              application.alias
-            }`,
+            `${userService.getBaseUrl()}/api/Application/${application.alias}`,
             {
               headers: { apiKey: userService.getApiKey() }
             }
@@ -241,7 +239,7 @@ export default new Vuex.Store({
     // ciltures
     loadCultures(context) {
       return axios
-        .get(`${process.env.VUE_APP_API_URL}/api/Culture`, {
+        .get(`${userService.getBaseUrl()}/api/Culture`, {
           headers: { apiKey: userService.getApiKey() }
         })
         .then(response => {
@@ -251,7 +249,7 @@ export default new Vuex.Store({
     createCulture(context, culture) {
       return new Promise((resolve, reject) => {
         axios
-          .post(`${process.env.VUE_APP_API_URL}/api/Culture`, culture, {
+          .post(`${userService.getBaseUrl()}/api/Culture`, culture, {
             headers: { apiKey: userService.getApiKey() }
           })
           .then(
@@ -271,7 +269,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios
           .delete(
-            `${process.env.VUE_APP_API_URL}/api/Culture/${culture.cultureName}`,
+            `${userService.getBaseUrl()}/api/Culture/${culture.cultureName}`,
             {
               headers: { apiKey: userService.getApiKey() }
             }

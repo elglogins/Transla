@@ -6,7 +6,8 @@ export const userService = {
   create,
   remove,
   login,
-  getApiKey
+  getApiKey,
+  getBaseUrl
 };
 
 function getApiKey() {
@@ -15,6 +16,14 @@ function getApiKey() {
   }
 
   return get().apiKey;
+}
+
+function getBaseUrl() {
+  if (!isLoggedIn()) {
+    return null;
+  }
+
+  return get().baseUrl;
 }
 
 function isLoggedIn() {
