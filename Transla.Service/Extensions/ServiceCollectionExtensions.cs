@@ -33,10 +33,9 @@ namespace Transla.Service.Extensions
             else
             {
                 services.AddCors(options => options.AddPolicy("TranslaAllowAll", p => p.WithOrigins(allowedCorsOrigins)
-              .AllowAnyMethod()
-              .AllowAnyHeader()));
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()));
             }
-           
 
             services.AddAuthentication(AuthenticationSchemas.ManagementAccess)
                 .AddScheme<AuthenticationSchemeOptions, ManagementAccessHandler>(AuthenticationSchemas.ManagementAccess, null);

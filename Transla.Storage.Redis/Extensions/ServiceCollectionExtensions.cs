@@ -31,7 +31,6 @@ namespace Transla.Storage.Redis.Extensions
             services.AddTransient<ICultureService, RedisCultureService>();
             services.AddTransient<IDictionaryService, RedisDictionaryService>();
             services.AddTransient<IApplicationService, RedisApplicationService>();
-            services.AddTransient<IApiKeyService, RedisApiKeyService>();
         }
     }
 }
