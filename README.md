@@ -39,7 +39,7 @@ To configure what kind of storage to use, each of packages implements their own 
 Last piece of code, once app dependencies and services are registered, during `Configure(IApplicationBuilder)` you need to bootstrap Transla, by executing next line:
 
 ```csharp
-app.UseTransla();
+app.UseTransla("your-administration-api-key");
 ```
 
 ### Example of client setup in .NET Core
